@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"testing"
 )
@@ -50,7 +49,7 @@ func TestGetAPIKey(t *testing.T) {
 
 	for _, tc := range tests {
 		tc := tc
-		t.Run(fmt.Sprintf("%s", tc.name), func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			h := make(http.Header)
 
 			if tc.authValue != "" {
