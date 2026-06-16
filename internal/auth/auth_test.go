@@ -1,58 +1,55 @@
 package auth
 
 import (
-	"fmt"
-	"testing"
 	"errors"
 	"net/http"
+	"testing"
 )
 
 func TestGetAPIKey(t *testing.T) {
 	tests := []struct {
-		name		string
-		authValue	string
-		wantKey		string
-		wantErr		error
+		name      string
+		authValue string
+		wantKey   string
+		wantErr   error
 	}{
 		{
-			name:		"no autthorization header",
-			wantErr:	ErrNoAuthHeaderIncluded,
+			name:    "no autthorization header",
+			wantErr: ErrNoAuthHeaderIncluded},
+		{
+			name:      "empty autthorization header",
+			authValue: "",
+			wantErr:   ErrNoAuthHeaderIncluded},
+		{
+			name:      "malformed - no token",
+			authValue: "ApiKey",
+			wantErr:   errors.New("malformed authorization header"),
 		},
 		{
-			name:		"empty autthorization header",
-			authValue:	"",
-			wantErr:	ErrNoAuthHeaderIncluded,
+			name:      "malformed - wrong scheme",
+			authValue: "Bearer abc123",
+			wantErr:   errors.New("malformed authorization header"),
 		},
 		{
-			name:		"malformed - no token",
-			authValue:	"ApiKey",
-			wantErr:	errors.New("malformed authorization header"),
+			name:      "malformed - scheme case sensitive",
+			authValue: "apikey abc123",
+			wantErr:   errors.New("malformed authorization header"),
 		},
 		{
-			name:		"malformed - wrong scheme",
-			authValue:	"Bearer abc123",
-			wantErr:	errors.New("malformed authorization header"),
+			name:      "valid",
+			authValue: "ApiKey abc123",
+			wantKey:   "abc123",
 		},
 		{
-			name:		"malformed - scheme case sensitive",
-			authValue:	"apikey abc123",
-			wantErr:	errors.New("malformed authorization header"),
-		},
-		{
-			name:		"valid",
-			authValue:	"ApiKey abc123",
-			wantKey:	"abc123",
-		},
-		{
-			name:		"valid - exta parts ignored",
-			authValue:	"ApiKey abc123 extra",
-			wantKey:	"abc123",
+			name:      "valid - exta parts ignored",
+			authValue: "ApiKey abc123 extra",
+			wantKey:   "abc123",
 		},
 	}
 
 	for _, tc := range tests {
 		tc := tc
-		t.Run(fmt.Sprintf("%s", tc.name), func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			h := make(http.Header)
 
 			if tc.authValue != "" {
@@ -95,4 +92,3 @@ func TestGetAPIKey(t *testing.T) {
 		})
 	}
 }
-
