@@ -38,7 +38,7 @@ func main() {
 	}
 	var portNum int = -1
 	portNum, errPortNum := strconv.Atoi(port)
-	if errPortNum != nil || validPort(portNum) {
+	if errPortNum != nil || !validPort(portNum) {
 		log.Fatal("invalid port")
 	}
 
